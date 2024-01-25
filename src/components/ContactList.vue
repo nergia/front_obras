@@ -18,7 +18,12 @@
                     <th scope="row">{{contact.email}}</th>
                     <th scope="row">{{contact.designation}}</th>
                     <th scope="row">{{contact.contact_no}}</th>
-                    <th scope="row"><button class="btn btn-danger btn-sm" @click.prevent="deleteContact(contact.id)">Delete</button></th>
+                    <th scope="row">
+                        <router-link :to="{ name:'EditContact', params:{id: contact.id} }"
+                            class="btn btn-primary btn-sm">Edit</router-link>
+                    </th>
+                    <th scope="row"><button class="btn btn-danger btn-sm"
+                            @click.prevent="deleteContact(contact.id)">Delete</button></th>
                 </tr>
             </tbody>
         </table>
@@ -26,40 +31,42 @@
 </template>
 
 <script>
-import axios from 'axios';
+    import axios from 'axios';
 
-export default {
-    name: 'ContactList',
-    data(){
-        return{
-            contacts:Array
-        }
-    },
-    created(){
-        this.getContacts();
-    },
-    methods:{
-        async getContacts(){
-            let url="http://127.0.0.1:8000/api/contacts";
-            await axios.get(url).then(response =>{
-                this.contacts = response.data.contacts;
-                console.log(this.contacts);
-            }).catch(error=>{
-                console.log(error);
-            });
+    export default {
+        name: 'ContactList',
+        data() {
+            return {
+                contacts: Array
+            }
         },
-        async deleteContact(id){
-            let url="http://127.0.0.1:8000/api/delete_contact/${id}";
-            await axios.get(url).then(response => {
-                if(response.data.code ==200){
-                    alert(response.message);
-                    this.getContacts();
-                }
-            }).catch()
+        created() {
+            this.getContacts();
+        },
+        methods: {
+            async getContacts() {
+                let url = "http://127.0.0.1:8000/api/contacts";
+                await axios.get(url).then(response => {
+                    this.contacts = response.data.contacts;
+                    console.log(this.contacts);
+                }).catch(error => {
+                    console.log(error);
+                });
+            },
+            async deleteContact(id) {
+                let url = `http://127.0.0.1:8000/api/delete_contact/${id}`;
+                await axios.delete(url).then(response => {
+                    if (response.data.code == 200) {
+                        alert(response.data.message);
+                        this.getContacts();
+                    }
+                }).catch(error => {
+                    console.log(error)
+                })
+            }
+        },
+        mounted() {
+            console.log('Contact List Component mounted');
         }
-    },
-    mounted(){
-        console.log('Contact List Component mounted');
     }
-}
 </script>
