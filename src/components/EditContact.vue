@@ -9,7 +9,7 @@
                         </li>
                     </ul>
                 </div>
-                <form >
+                <form @submit.prevent="updateContact" novalidate>
                     <fieldset>
                         <div class="form-group">
                             <label class="form-label mt-4">Name</label>
@@ -62,6 +62,40 @@
                     console.log(response);
                     this.contact = response.data;
                 })
+            },
+            async updateContact(){
+                this.errors = [];
+                if (!this.contact.name) {
+                    this.errors.push("Name is required")
+                }
+                if (!this.contact.email) {
+                    this.errors.push("Email is required")
+                }
+                if (!this.contact.designation) {
+                    this.errors.push("Designation is required")
+                }
+                if (!this.contact.contact_no) {
+                    this.errors.push("Contact Number is required")
+                }
+
+                if(!this.errors.length){
+                    let formData = new FormData();
+                        formData.append('name', this.contact.name);
+                        formData.append('email', this.contact.email);
+                        formData.append('designation', this.contact.designation);
+                        formData.append('contact_no', this.contact.contact_no);
+                    let url=`http://127.0.0.1:8000/api/update_contact/${this.$route.params.id}`;
+                    await axios.post(url, formData).then((response)=>{
+                        console.log(response);
+                        if(response.status == 200){
+                            alert(response.data.message);
+                        }else{
+                            console.log('error')
+                        }
+                    }).catch(error=>{
+                        this.errors.push(error.response);
+                    })
+                }
             }
         },
         mounted: function(){
